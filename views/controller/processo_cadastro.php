@@ -30,8 +30,8 @@ try{
     $result_query4 = $db->EXE_QUERY($query_dependente);
     
     $erro = 0;
-    $uploadOk = 1;
-    $uploadOk2 = 1;
+//    $uploadOk = 1;
+//    $uploadOk2 = 1;
     $target_file=$target_file2=$target_file3=$upload=$comprovante=$c=$documento=$d=$u=$msgtxt1=$msgtxt2=$msgtxt3=$datatxt=$fone='';
     
     // gerar um numero rendomico
@@ -53,7 +53,7 @@ try{
     $nacionalidade = isset($_POST['nacionalidade']) && !empty(trim($_POST['nacionalidade'])) ? trim($_POST['nacionalidade']) : "";
     $etnia = isset($_POST['etnia']) && !empty(trim($_POST['etnia'])) ? trim($_POST['etnia']) : "";
     $sexo = isset($_POST['sexo']) && !empty(trim($_POST['sexo'])) ? trim($_POST['sexo']) : "";
-    $afastamento = isset($_POST['afastado']) && !empty(trim($_POST['afastado'])) ? trim($_POST['afastado']) : "";
+//    $afastamento = isset($_POST['afastado']) && !empty(trim($_POST['afastado'])) ? trim($_POST['afastado']) : "";
     $deficiente = isset($_POST['deficiente']) && !empty(trim($_POST['deficiente'])) ? trim($_POST['deficiente']) : "";
     $cpf = isset($_POST['cpf']) && !empty(trim($_POST['cpf'])) ? trim($_POST['cpf']) : "";
     $nome = isset($_POST['nome']) && !empty(trim($_POST['nome'])) ? trim($_POST['nome']) : "";
@@ -77,13 +77,15 @@ try{
     $digito_c = isset($_POST['digitoConta']) && !empty(trim($_POST['digitoConta'])) ? trim($_POST['digitoConta']) : "";
     $casoNao = isset($_POST['casoNao']) && !empty(trim($_POST['casoNao'])) ? trim($_POST['casoNao']) : "";
     $pix = isset($_POST['chpix']) && !empty(trim($_POST['chpix'])) ? trim($_POST['chpix']) : "";
-    $clinica = isset($_POST['clinica']) && !empty(trim($_POST['clinica'])) ? trim($_POST['clinica']) : "";
-    $date_return = isset($_POST['date_return']) && !empty(trim($_POST['date_return'])) ? trim($_POST['date_return']) : null;
+//    $clinica = isset($_POST['clinica']) && !empty(trim($_POST['clinica'])) ? trim($_POST['clinica']) : "";
+//    $date_return = isset($_POST['date_return']) && !empty(trim($_POST['date_return'])) ? trim($_POST['date_return']) : null;
     //novos campos
     $dtchegada = isset($_POST['dtchegada']) && !empty(trim($_POST['dtchegada'])) ? trim($_POST['dtchegada']) : null;
     $rne = isset($_POST['rne']) && !empty(trim($_POST['rne'])) ? trim($_POST['rne']) : '';
     $orgemissorrne = isset($_POST['orgemissorrne']) && !empty(trim($_POST['orgemissorrne'])) ? trim($_POST['orgemissorrne']) : '';
     $tipopermanencia = isset($_POST['tipopermanencia']) && !empty(trim($_POST['tipopermanencia'])) ? trim($_POST['tipopermanencia']) : '';
+    $dispb = isset($_POST['dispb']) && !empty(trim($_POST['dispb'])) ? trim($_POST['dispb']) : '';
+    $dtdisp = isset($_POST['dtdisp']) && !empty(trim($_POST['dtdisp'])) ? trim($_POST['dtdisp']) : '';
     $rddep = isset($_POST['rddep']) && !empty(trim($_POST['rddep'])) ? trim($_POST['rddep']) : '';
     $contadep = isset($_POST['contadep']) && !empty(trim($_POST['contadep'])) ? trim($_POST['contadep']) : '0';
     $contadep = (int)$contadep;
@@ -94,11 +96,20 @@ try{
     $telefoneqi = isset($_POST['telefoneqi']) && !empty(trim($_POST['telefoneqi'])) ? trim($_POST['telefoneqi']) : '';
     
     //validando os campos obrigatórios de dependentes
+    if ($dispb === '') {
+        $erro = 1;
+        throw new Exception("Marque o campo: Você está disponível para início imediato de suas atividades laborais?");
+    }
+    if ($dispb === 'N') {
+        if ($dtdisp === '') {
+            $erro = 1;
+            throw new Exception("Preencha o campo: Indicar a data de início");
+        }
+    }
     if ($rddep === '') {
         $erro = 1;
         throw new Exception("Marque o campo: Possui dependente?");
     }
-    
     if ($rddep === 'S') {
         if($contadep > 0){
             $tipodep = $nomedep = $sexodep = $dtnascdep = $cpfdep = $idadedep = $declarairpfdep = array();
@@ -213,10 +224,10 @@ try{
         $erro = 1;
         throw new Exception("Selecione o campo: Etnia/Raça/Cor");
     }
-    if ($afastamento === '') {
-        $erro = 1;
-        throw new Exception("Selecione o campo: Está afastado no momento? ...");
-    }
+//    if ($afastamento === '') {
+//        $erro = 1;
+//        throw new Exception("Selecione o campo: Está afastado no momento? ...");
+//    }
     if ($deficiente === '') {
         $erro = 1;
         throw new Exception("Selecione o campo: Deficiente Habilitado ou Reabilitado");
@@ -311,7 +322,6 @@ try{
         $erro = 1;
         throw new Exception("Preencha o campo Nº de telefone/celular de quem fez a indicação para o cargo - Telefone");
     }
-    
     if ($dseis === '') {
         $erro = 1;
         throw new Exception("Selecione o campo: Lista dos DSEIs elegíveis");
@@ -379,200 +389,200 @@ try{
         $erro = 1;
         throw new Exception("Preencha o campo Upload do documento de indicação.");
     }
-
+    
     // Tratamento do upload do Recibo de Pagamento
-    if ($clinica === 'particular') {
-        $datatxt = "" . $data . $rand;
-        $datatxt = substr($datatxt, 2);
-        $datatxt = str_replace("-", "", $datatxt);
-        $datatxt = str_replace(" ", "", $datatxt);
-        $datatxt = str_replace(":", "", $datatxt);
-        $comprovantesDir = "comprovantes/$datatxt";
-        $target_file2 = $comprovantesDir . basename($_FILES['reciboPagamento']['name']);
-        $imageFileType2 = strtolower(pathinfo($target_file2, PATHINFO_EXTENSION));
-
-        if (basename($_FILES['reciboPagamento']['name']) == '' || empty($_FILES['reciboPagamento']['name'])) {
-            $uploadOk2 = 0;
-            throw new Exception("Você precisa anexar um comprovante de pagamento.");
-        }
-        if (file_exists($target_file2)) { // Check if file already exists
-            $uploadOk2 = 0;
-            throw new Exception("Desculpe, o arquivo já existe.");
-        } elseif ($_FILES["reciboPagamento"]["size"] > 100000000) { // Check file size < 100mb
-            $uploadOk2 = 0;
-            throw new Exception("Desculpe, seu arquivo é muito grande. Limite 100Mb");
-        } elseif ($imageFileType2 !== "jpg" && $imageFileType2 !== "png" && $imageFileType2 != "jpeg" && $imageFileType2 !== "pdf") {
-            // Allow certain file formats
-            $uploadOk2 = 0;
-            throw new Exception("Você precisa anexar um comprovante de pagamento válido (PDF, JPG, JPEG & PNG)");
-        }
-    } else {
-        $c = "A Clínica é credenciada.";
-    }
-    if ($afastamento === 'N') {
-        if ($dseis !== '10') {
-            // valida a clinica conveniada
-            if ($clinica === '') {
-                $erro = 1;
-                throw new Exception("Selecione o campo: Seu exame admissional foi realizado pela Clínica credenciada ou particular?");
-            }
-            // Tratamento do upload do Exame Admissional
-            if (isset($_FILES['exameAdmissional'])) {
-                $datatxt = "" . $data . $rand;
-                $datatxt = substr($datatxt, 2);
-                $datatxt = str_replace("-", "", $datatxt);
-                $datatxt = str_replace(" ", "", $datatxt);
-                $datatxt = str_replace(":", "", $datatxt);
-                $uploadDir = "uploads/$datatxt";
-                $target_file = $uploadDir . basename($_FILES['exameAdmissional']['name']);
-                $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-
-                if (basename($_FILES['exameAdmissional']['name']) == '' || empty($_FILES['exameAdmissional']['name'])) {
-                    $uploadOk = 0;
-                    throw new Exception("Você precisa anexar um exame admissional.");
-                }
-                //
-                if ($_FILES['exameAdmissional']['name'] == '') {
-                    $imageFileType = "jpg";
-                }
-                //
-                if (file_exists($target_file)) { // Check if file already exists
-                    $uploadOk = 0;
-                    throw new Exception("Desculpe, o arquivo já existe.");
-                } elseif ($_FILES["exameAdmissional"]["size"] > 100000000) { // Check file size < 100mb
-                    $uploadOk = 0;
-                    throw new Exception("Desculpe, seu arquivo é muito grande. Limite 100Mb");
-                } elseif ($imageFileType !== "jpg" && $imageFileType !== "png" && $imageFileType != "jpeg" && $imageFileType !== "pdf") {
-                    // Allow certain file formats
-                    $uploadOk = 0;
-                    throw new Exception("Desculpe, apenas arquivos (PDF, JPG, JPEG & PNG)");
-                }
-            }
-
-            // Tratamento do upload do Recibo de Pagamento
-            if ($clinica === 'particular') {
-                $datatxt = "" . $data . $rand;
-                $datatxt = substr($datatxt, 2);
-                $datatxt = str_replace("-", "", $datatxt);
-                $datatxt = str_replace(" ", "", $datatxt);
-                $datatxt = str_replace(":", "", $datatxt);
-                $comprovantesDir = "comprovantes/$datatxt";
-                $target_file2 = $comprovantesDir . basename($_FILES['reciboPagamento']['name']);
-                $imageFileType2 = strtolower(pathinfo($target_file2, PATHINFO_EXTENSION));
-
-                if (basename($_FILES['reciboPagamento']['name']) == '' || empty($_FILES['reciboPagamento']['name'])) {
-                    $uploadOk2 = 0;
-                    throw new Exception("Você precisa anexar um comprovante de pagamento.");
-                }
-                if (file_exists($target_file2)) { // Check if file already exists
-                    $uploadOk2 = 0;
-                    throw new Exception("Desculpe, o arquivo já existe.");
-                } elseif ($_FILES["reciboPagamento"]["size"] > 100000000) { // Check file size < 100mb
-                    $uploadOk2 = 0;
-                    throw new Exception("Desculpe, seu arquivo é muito grande. Limite 100Mb");
-                } elseif ($imageFileType2 !== "jpg" && $imageFileType2 !== "png" && $imageFileType2 != "jpeg" && $imageFileType2 !== "pdf") {
-                    // Allow certain file formats
-                    $uploadOk2 = 0;
-                    throw new Exception("Você precisa anexar um comprovante de pagamento válido (PDF, JPG, JPEG & PNG)");
-                }
-            } else {
-                $c = "A Clínica é credenciada.";
-            }
-        }else{
-            if($clinica !== ''){
-                // Tratamento do upload do Exame Admissional
-                if (isset($_FILES['exameAdmissional'])) {
-                    $datatxt = "" . $data . $rand;
-                    $datatxt = substr($datatxt, 2);
-                    $datatxt = str_replace("-", "", $datatxt);
-                    $datatxt = str_replace(" ", "", $datatxt);
-                    $datatxt = str_replace(":", "", $datatxt);
-                    $uploadDir = "uploads/$datatxt";
-                    $target_file = $uploadDir . basename($_FILES['exameAdmissional']['name']);
-                    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-
-                    if (basename($_FILES['exameAdmissional']['name']) == '' || empty($_FILES['exameAdmissional']['name'])) {
-                        $uploadOk = 0;
-                        throw new Exception("Você precisa anexar um exame admissional.");
-                    }
-                    //
-                    if ($_FILES['exameAdmissional']['name'] == '') {
-                        $imageFileType = "jpg";
-                    }
-                    //
-                    if (file_exists($target_file)) { // Check if file already exists
-                        $uploadOk = 0;
-                        throw new Exception("Desculpe, o arquivo já existe.");
-                    } elseif ($_FILES["exameAdmissional"]["size"] > 100000000) { // Check file size < 100mb
-                        $uploadOk = 0;
-                        throw new Exception("Desculpe, seu arquivo é muito grande. Limite 100Mb");
-                    } elseif ($imageFileType !== "jpg" && $imageFileType !== "png" && $imageFileType != "jpeg" && $imageFileType !== "pdf") {
-                        // Allow certain file formats
-                        $uploadOk = 0;
-                        throw new Exception("Desculpe, apenas arquivos (PDF, JPG, JPEG & PNG)");
-                    }
-                }
-
-                // Tratamento do upload do Recibo de Pagamento
-                if ($clinica === 'particular') {
-                    $datatxt = "" . $data . $rand;
-                    $datatxt = substr($datatxt, 2);
-                    $datatxt = str_replace("-", "", $datatxt);
-                    $datatxt = str_replace(" ", "", $datatxt);
-                    $datatxt = str_replace(":", "", $datatxt);
-                    $comprovantesDir = "comprovantes/$datatxt";
-                    $target_file2 = $comprovantesDir . basename($_FILES['reciboPagamento']['name']);
-                    $imageFileType2 = strtolower(pathinfo($target_file2, PATHINFO_EXTENSION));
-
-                    if (basename($_FILES['reciboPagamento']['name']) == '' || empty($_FILES['reciboPagamento']['name'])) {
-                        $uploadOk2 = 0;
-                        throw new Exception("Você precisa anexar um comprovante de pagamento.");
-                    }
-                    if (file_exists($target_file2)) { // Check if file already exists
-                        $uploadOk2 = 0;
-                        throw new Exception("Desculpe, o arquivo já existe.");
-                    } elseif ($_FILES["reciboPagamento"]["size"] > 100000000) { // Check file size < 100mb
-                        $uploadOk2 = 0;
-                        throw new Exception("Desculpe, seu arquivo é muito grande. Limite 100Mb");
-                    } elseif ($imageFileType2 !== "jpg" && $imageFileType2 !== "png" && $imageFileType2 != "jpeg" && $imageFileType2 !== "pdf") {
-                        // Allow certain file formats
-                        $uploadOk2 = 0;
-                        throw new Exception("Você precisa anexar um comprovante de pagamento válido (PDF, JPG, JPEG & PNG)");
-                    }
-                } else {
-                    $c = "A Clínica é credenciada.";
-                }
-            }
-        }
-    } else {
-        $clinica = "Está afastado por mais de 15 dias";
-        if ($date_return === '') {
-            $erro = 1;
-            throw new Exception("Preencha o campo: Informe a data de retorno");
-        }
-    }
+//    if ($clinica === 'particular') {
+//        $datatxt = "" . $data . $rand;
+//        $datatxt = substr($datatxt, 2);
+//        $datatxt = str_replace("-", "", $datatxt);
+//        $datatxt = str_replace(" ", "", $datatxt);
+//        $datatxt = str_replace(":", "", $datatxt);
+//        $comprovantesDir = "comprovantes/$datatxt";
+//        $target_file2 = $comprovantesDir . basename($_FILES['reciboPagamento']['name']);
+//        $imageFileType2 = strtolower(pathinfo($target_file2, PATHINFO_EXTENSION));
+//
+//        if (basename($_FILES['reciboPagamento']['name']) == '' || empty($_FILES['reciboPagamento']['name'])) {
+//            $uploadOk2 = 0;
+//            throw new Exception("Você precisa anexar um comprovante de pagamento.");
+//        }
+//        if (file_exists($target_file2)) { // Check if file already exists
+//            $uploadOk2 = 0;
+//            throw new Exception("Desculpe, o arquivo já existe.");
+//        } elseif ($_FILES["reciboPagamento"]["size"] > 100000000) { // Check file size < 100mb
+//            $uploadOk2 = 0;
+//            throw new Exception("Desculpe, seu arquivo é muito grande. Limite 100Mb");
+//        } elseif ($imageFileType2 !== "jpg" && $imageFileType2 !== "png" && $imageFileType2 != "jpeg" && $imageFileType2 !== "pdf") {
+//            // Allow certain file formats
+//            $uploadOk2 = 0;
+//            throw new Exception("Você precisa anexar um comprovante de pagamento válido (PDF, JPG, JPEG & PNG)");
+//        }
+//    } else {
+//        $c = "A Clínica é credenciada.";
+//    }
+//    if ($afastamento === 'N') {
+//        if ($dseis !== '10') {
+//            // valida a clinica conveniada
+//            if ($clinica === '') {
+//                $erro = 1;
+//                throw new Exception("Selecione o campo: Seu exame admissional foi realizado pela Clínica credenciada ou particular?");
+//            }
+//            // Tratamento do upload do Exame Admissional
+//            if (isset($_FILES['exameAdmissional'])) {
+//                $datatxt = "" . $data . $rand;
+//                $datatxt = substr($datatxt, 2);
+//                $datatxt = str_replace("-", "", $datatxt);
+//                $datatxt = str_replace(" ", "", $datatxt);
+//                $datatxt = str_replace(":", "", $datatxt);
+//                $uploadDir = "uploads/$datatxt";
+//                $target_file = $uploadDir . basename($_FILES['exameAdmissional']['name']);
+//                $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+//
+//                if (basename($_FILES['exameAdmissional']['name']) == '' || empty($_FILES['exameAdmissional']['name'])) {
+//                    $uploadOk = 0;
+//                    throw new Exception("Você precisa anexar um exame admissional.");
+//                }
+//                //
+//                if ($_FILES['exameAdmissional']['name'] == '') {
+//                    $imageFileType = "jpg";
+//                }
+//                //
+//                if (file_exists($target_file)) { // Check if file already exists
+//                    $uploadOk = 0;
+//                    throw new Exception("Desculpe, o arquivo já existe.");
+//                } elseif ($_FILES["exameAdmissional"]["size"] > 100000000) { // Check file size < 100mb
+//                    $uploadOk = 0;
+//                    throw new Exception("Desculpe, seu arquivo é muito grande. Limite 100Mb");
+//                } elseif ($imageFileType !== "jpg" && $imageFileType !== "png" && $imageFileType != "jpeg" && $imageFileType !== "pdf") {
+//                    // Allow certain file formats
+//                    $uploadOk = 0;
+//                    throw new Exception("Desculpe, apenas arquivos (PDF, JPG, JPEG & PNG)");
+//                }
+//            }
+//
+//            // Tratamento do upload do Recibo de Pagamento
+//            if ($clinica === 'particular') {
+//                $datatxt = "" . $data . $rand;
+//                $datatxt = substr($datatxt, 2);
+//                $datatxt = str_replace("-", "", $datatxt);
+//                $datatxt = str_replace(" ", "", $datatxt);
+//                $datatxt = str_replace(":", "", $datatxt);
+//                $comprovantesDir = "comprovantes/$datatxt";
+//                $target_file2 = $comprovantesDir . basename($_FILES['reciboPagamento']['name']);
+//                $imageFileType2 = strtolower(pathinfo($target_file2, PATHINFO_EXTENSION));
+//
+//                if (basename($_FILES['reciboPagamento']['name']) == '' || empty($_FILES['reciboPagamento']['name'])) {
+//                    $uploadOk2 = 0;
+//                    throw new Exception("Você precisa anexar um comprovante de pagamento.");
+//                }
+//                if (file_exists($target_file2)) { // Check if file already exists
+//                    $uploadOk2 = 0;
+//                    throw new Exception("Desculpe, o arquivo já existe.");
+//                } elseif ($_FILES["reciboPagamento"]["size"] > 100000000) { // Check file size < 100mb
+//                    $uploadOk2 = 0;
+//                    throw new Exception("Desculpe, seu arquivo é muito grande. Limite 100Mb");
+//                } elseif ($imageFileType2 !== "jpg" && $imageFileType2 !== "png" && $imageFileType2 != "jpeg" && $imageFileType2 !== "pdf") {
+//                    // Allow certain file formats
+//                    $uploadOk2 = 0;
+//                    throw new Exception("Você precisa anexar um comprovante de pagamento válido (PDF, JPG, JPEG & PNG)");
+//                }
+//            } else {
+//                $c = "A Clínica é credenciada.";
+//            }
+//        }else{
+//            if($clinica !== ''){
+//                // Tratamento do upload do Exame Admissional
+//                if (isset($_FILES['exameAdmissional'])) {
+//                    $datatxt = "" . $data . $rand;
+//                    $datatxt = substr($datatxt, 2);
+//                    $datatxt = str_replace("-", "", $datatxt);
+//                    $datatxt = str_replace(" ", "", $datatxt);
+//                    $datatxt = str_replace(":", "", $datatxt);
+//                    $uploadDir = "uploads/$datatxt";
+//                    $target_file = $uploadDir . basename($_FILES['exameAdmissional']['name']);
+//                    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+//
+//                    if (basename($_FILES['exameAdmissional']['name']) == '' || empty($_FILES['exameAdmissional']['name'])) {
+//                        $uploadOk = 0;
+//                        throw new Exception("Você precisa anexar um exame admissional.");
+//                    }
+//                    //
+//                    if ($_FILES['exameAdmissional']['name'] == '') {
+//                        $imageFileType = "jpg";
+//                    }
+//                    //
+//                    if (file_exists($target_file)) { // Check if file already exists
+//                        $uploadOk = 0;
+//                        throw new Exception("Desculpe, o arquivo já existe.");
+//                    } elseif ($_FILES["exameAdmissional"]["size"] > 100000000) { // Check file size < 100mb
+//                        $uploadOk = 0;
+//                        throw new Exception("Desculpe, seu arquivo é muito grande. Limite 100Mb");
+//                    } elseif ($imageFileType !== "jpg" && $imageFileType !== "png" && $imageFileType != "jpeg" && $imageFileType !== "pdf") {
+//                        // Allow certain file formats
+//                        $uploadOk = 0;
+//                        throw new Exception("Desculpe, apenas arquivos (PDF, JPG, JPEG & PNG)");
+//                    }
+//                }
+//
+//                // Tratamento do upload do Recibo de Pagamento
+//                if ($clinica === 'particular') {
+//                    $datatxt = "" . $data . $rand;
+//                    $datatxt = substr($datatxt, 2);
+//                    $datatxt = str_replace("-", "", $datatxt);
+//                    $datatxt = str_replace(" ", "", $datatxt);
+//                    $datatxt = str_replace(":", "", $datatxt);
+//                    $comprovantesDir = "comprovantes/$datatxt";
+//                    $target_file2 = $comprovantesDir . basename($_FILES['reciboPagamento']['name']);
+//                    $imageFileType2 = strtolower(pathinfo($target_file2, PATHINFO_EXTENSION));
+//
+//                    if (basename($_FILES['reciboPagamento']['name']) == '' || empty($_FILES['reciboPagamento']['name'])) {
+//                        $uploadOk2 = 0;
+//                        throw new Exception("Você precisa anexar um comprovante de pagamento.");
+//                    }
+//                    if (file_exists($target_file2)) { // Check if file already exists
+//                        $uploadOk2 = 0;
+//                        throw new Exception("Desculpe, o arquivo já existe.");
+//                    } elseif ($_FILES["reciboPagamento"]["size"] > 100000000) { // Check file size < 100mb
+//                        $uploadOk2 = 0;
+//                        throw new Exception("Desculpe, seu arquivo é muito grande. Limite 100Mb");
+//                    } elseif ($imageFileType2 !== "jpg" && $imageFileType2 !== "png" && $imageFileType2 != "jpeg" && $imageFileType2 !== "pdf") {
+//                        // Allow certain file formats
+//                        $uploadOk2 = 0;
+//                        throw new Exception("Você precisa anexar um comprovante de pagamento válido (PDF, JPG, JPEG & PNG)");
+//                    }
+//                } else {
+//                    $c = "A Clínica é credenciada.";
+//                }
+//            }
+//        }
+//    } else {
+//        $clinica = "Está afastado por mais de 15 dias";
+//        if ($date_return === '') {
+//            $erro = 1;
+//            throw new Exception("Preencha o campo: Informe a data de retorno");
+//        }
+//    }
         // se não houver nenhum erro fazer o insert no canco e dispara um email de confirmação
-    if ($erro == 0 && $uploadOk == 1 && $uploadOk2 == 1) {
+    if ($erro == 0) {
         try{
 //             // move para o diretório views/uploads
-            if(strlen($target_file) > 0){
-                if (move_uploaded_file($_FILES["exameAdmissional"]["tmp_name"], '../'. $target_file)) {
-                    $u = $target_file;
-                    $upload = "ok";
-                    $msgtxt1 .= "O arquivo " . htmlspecialchars(basename($_FILES["exameAdmissional"]["name"])) . " foi carregado. ";
-                }else{
-                    throw new Exception("Upload do Exame Admissional NÃO EXECUTADO!");
-                }
-            }
-            if(strlen($target_file2) > 0){
-                if (move_uploaded_file($_FILES["reciboPagamento"]["tmp_name"], '../'. $target_file2)) {
-                    $c = $target_file2;
-                    $comprovante = "ok";
-                    $msgtxt2 .= "O arquivo " . htmlspecialchars(basename($_FILES["reciboPagamento"]["name"])) . " foi carregado.";
-                }else{
-                    throw new Exception("Upload do Recibo de Pagamento NÃO EXECUTADO!");
-                }
-            }
+//            if(strlen($target_file) > 0){
+//                if (move_uploaded_file($_FILES["exameAdmissional"]["tmp_name"], '../'. $target_file)) {
+//                    $u = $target_file;
+//                    $upload = "ok";
+//                    $msgtxt1 .= "O arquivo " . htmlspecialchars(basename($_FILES["exameAdmissional"]["name"])) . " foi carregado. ";
+//                }else{
+//                    throw new Exception("Upload do Exame Admissional NÃO EXECUTADO!");
+//                }
+//            }
+//            if(strlen($target_file2) > 0){
+//                if (move_uploaded_file($_FILES["reciboPagamento"]["tmp_name"], '../'. $target_file2)) {
+//                    $c = $target_file2;
+//                    $comprovante = "ok";
+//                    $msgtxt2 .= "O arquivo " . htmlspecialchars(basename($_FILES["reciboPagamento"]["name"])) . " foi carregado.";
+//                }else{
+//                    throw new Exception("Upload do Recibo de Pagamento NÃO EXECUTADO!");
+//                }
+//            }
             //preparando o objeto para inserir no bd
             $parametros = [
                 ':nome' => $nome,
@@ -592,9 +602,9 @@ try{
                 ':digito_c' => $digito_c,
                 ':casoNao' => $casoNao,
                 ':cpf_pix' => $pix,
-                ':clinica' => $clinica,
-                ':arquivoExame' => $upload ? "https://agsusbrasil.org/precadastro_v2/views/$u" : $u,
-                ':comprovantePgto' => $comprovante ? "https://agsusbrasil.org/precadastro_v2/views/$c" : $c,
+//                ':clinica' => $clinica,
+//                ':arquivoExame' => $upload ? "https://agsusbrasil.org/precadastro_v2/views/$u" : $u,
+//                ':comprovantePgto' => $comprovante ? "https://agsusbrasil.org/precadastro_v2/views/$c" : $c,
 //                ':orgao_id' => $organizacao,
                 ':orgao_id' => 5,
                 ':profissao_id' => $profissao,
@@ -609,30 +619,30 @@ try{
                 ':tipopermanencia' => $tipopermanencia,
                 ':etnia' => $etnia,
                 ':deficiente' => $deficiente,
-                ':afastamento' => $afastamento,
+//                ':afastamento' => $afastamento,
                 ':paises_id' => $paises,
                 ':dsei_id' => $dseis,
                 ':nr_rg' => $nr_rg,
                 ':emissor_rg' => $emissor_rg,
                 ':uf_rg' => $uf_rg,
                 ':date_emissao_rg' => $date_emissao_rg,
-                ':create_at' => $data,
-                ':date_return' => $date_return
+                ':create_at' => $data
+//                ':date_return' => $date_return
             ];
             
             $insert = "INSERT INTO candidatos (nome_candidato,cpf_candidato,email_candidato,fone_candidato,
                 cep,endereco,numero,bairro,cidade,estado,contaBB,agencia,digito_ag,conta_corrente,digito_c,
-                casoNao,cpf_pix,clinica,arquivoExame,comprovantePgto,orgao_id,profissao_id,sexo,estado_civil,
+                casoNao,cpf_pix,orgao_id,profissao_id,sexo,estado_civil,
                 grau_instrucao,dt_nasc,nacionalidade,dtchegada,rne,orgemissorrne,tipopermanencia,etnia,deficiente,
-                afastamento,paises_id,dsei_id,nr_rg,emissor_rg,uf_rg,date_emissao_rg,create_at,date_return) 
+                paises_id,dsei_id,nr_rg,emissor_rg,uf_rg,date_emissao_rg,create_at) 
                 VALUES (:nome,:cpf,:email,:fone,:cep,:endereco,:numero,:bairro,:cidade,:estado,:contaBB,
-                :agencia,:digito_ag,:conta_corrente,:digito_c,:casoNao,:cpf_pix,:clinica,:arquivoExame,
-                :comprovantePgto,:orgao_id,:profissao_id,:sexo,:estado_civil,:grau_instrucao,:dt_nasc,
-                :nacionalidade,:dtchegada,:rne,:orgemissorrne,:tipopermanencia,:etnia,:deficiente,:afastamento,
-                :paises_id,:dsei_id,:nr_rg,:emissor_rg,:uf_rg,:date_emissao_rg,:create_at,:date_return)";
+                :agencia,:digito_ag,:conta_corrente,:digito_c,:casoNao,:cpf_pix,
+                :orgao_id,:profissao_id,:sexo,:estado_civil,:grau_instrucao,:dt_nasc,
+                :nacionalidade,:dtchegada,:rne,:orgemissorrne,:tipopermanencia,:etnia,:deficiente,
+                :paises_id,:dsei_id,:nr_rg,:emissor_rg,:uf_rg,:date_emissao_rg,:create_at)";
             $result_insert = $db->EXE_NON_QUERY($insert, $parametros);
             
-//            // se i insert for true dispara um e-mail de confirmação
+//            // se insert for true dispara um e-mail de confirmação
             if ($result_insert) {
                 //preparando objeto de quem indicou para o cargo - contratação direta
                 $query_cand1 = "SELECT max(id) as id FROM candidatos";
@@ -642,6 +652,28 @@ try{
                     $fkcandidato = $value['id'];
                     break;
                 }
+                if($dtdisp !== ''){
+                    //inserindo dados na tabela contratacaodiretainicio
+                    $parametrodisp = [
+                        ':disponibilidade' => $dispb,
+                        ':dtinicio' => $dtdisp,
+                        ':fkcandidatos' => $fkcandidato
+                    ];
+                    $insertdisp = "INSERT INTO contratacaodiretainicio (disponibilidade,dtinicio,fkcandidatos) 
+                                VALUES (:disponibilidade,:dtinicio,:fkcandidatos)";
+                    $result_insertdisp = $db->EXE_NON_QUERY($insertdisp, $parametrodisp);
+                }else{
+                    //inserindo dados na tabela contratacaodiretainicio
+                    $parametrodisp = [
+                        ':disponibilidade' => $dispb,
+                        ':fkcandidatos' => $fkcandidato
+                    ];
+                    $insertdisp = "INSERT INTO contratacaodiretainicio (disponibilidade,fkcandidatos) 
+                                VALUES (:disponibilidade,:fkcandidatos)";
+                    $result_insertdisp = $db->EXE_NON_QUERY($insertdisp, $parametrodisp);
+                }
+                
+                //inserindo na tabela quemindicou
                 $parametroqi = [
                     ':nomeqi' => $nomeqi,
                     ':cargoqi' => $cargoqi,
@@ -649,7 +681,6 @@ try{
                     ':documento' => $documento ? "https://agsusbrasil.org/precadastro_v2/views/$d" : $d,
                     ':fkcandidato' => $fkcandidato
                 ];
-                //inserindo no bd
                 $insertqi = "INSERT INTO quemindicou (nomeqi,cargoqi,telefoneqi,documento,fkcandidato) 
                             VALUES (:nomeqi,:cargoqi,:telefoneqi,:documento,:fkcandidato)";
                 $result_insertqi = $db->EXE_NON_QUERY($insertqi, $parametroqi);
@@ -735,14 +766,14 @@ try{
                     $mail->Subject = $subject;
                     $mail->Body = $body;
                     $mail->AltBody = $altBody;
-                    $response['success'] = true;
-                    $response['message'] = "OK";
-//                    if($mail->send()){
-//                        $response['success'] = true;
-//                        $response['message'] = "Seu pedido foi registrado com sucesso. Um email com uma cópia da sua solicitação foi enviada para $email. $msgtxt1 $msgtxt2 $msgtxt3";
-//                    }else{
-//                        throw new Exception("Não foi possível enviar o e-mail.");
-//                    }
+                    //$response['success'] = true;
+                    //$response['message'] = "OK";
+                    if($mail->send()){
+                        $response['success'] = true;
+                        $response['message'] = "Seu pedido foi registrado com sucesso. Um email com uma cópia da sua solicitação foi enviada para $email. $msgtxt1 $msgtxt2 $msgtxt3";
+                    }else{
+                        throw new Exception("Não foi possível enviar o e-mail.");
+                    }
                 } catch (Exception $e) {
                     $response['message'] = $e->getMessage();
                 }

@@ -74,9 +74,9 @@ $dthoje = date('Y-m-d');
           <input type="hidden" id="dataHora" name="data_hora">
           <!-- Lista dos DSEIs -->
           <div class="mb-3">
-            <label for="dseis" class="form-label"><b class="text-danger">*</b> Lista dos DSEIs elegíveis</label>
+            <label for="dseis" class="form-label"><b class="text-danger">*</b> DSEI que irá atuar</label>
             <select class="form-select" id="dseis" name="dseis">
-              <option value="" disabled selected>Escolha um DSEI</option>
+              <option value="" disabled selected>[--SELECIONE--]</option>
               <?php
                             foreach ($result_query4 as $dsei) {
                                 echo "<option value=" . $dsei['id'] . ">" . $dsei['nome_dsei'] . "</option>";
@@ -94,9 +94,9 @@ $dthoje = date('Y-m-d');
           </div>-->
           <!-- Lista de cargos -->
           <div class="mb-3">
-            <label for="sl_cargo" class="form-label"><b class="text-danger">*</b> Cargo ocupado atualmente</label>
+            <label for="sl_cargo" class="form-label"><b class="text-danger">*</b> Cargo a ser ocupado</label>
             <select class="form-select" id="profissao" name="profissao">
-              <option value="" disabled selected>Escolha uma profissão</option>
+              <option value="" disabled selected>[--SELECIONE--]</option>
               <?php
                 foreach ($result_query2 as $profissoes) {
                     echo "<option value=" . $profissoes['id'] . " >" . $profissoes['nome_profissao']. "</option>";
@@ -110,13 +110,35 @@ $dthoje = date('Y-m-d');
           </div>
           <!-- campo quem indicou - nome completo -->
           <div class="mb-3">
-            <label for="nomeqi" class="form-label"><b class="text-danger">*</b> Nome completo de quem fez a indicação para o cargo</label>
+            <label for="fornomeqi" class="form-label"><b class="text-danger">*</b> Nome completo de quem fez a indicação para o cargo</label>
             <input type="text" class="form-control" id="nomeqi" name="nomeqi" placeholder="Digite o nome completo de quem fez a indicação para o cargo">
           </div>
           <!-- campo quem indicou - cargo -->
           <div class="mb-3">
-            <label for="cargoqi" class="form-label"><b class="text-danger">*</b> Cargo de quem fez a indicação para o cargo</label>
-            <input type="text" class="form-control" id="cargoqi" name="cargoqi" placeholder="Digite o cargo de quem fez a indicação para o cargo">
+            <label for="forcargoqi" class="form-label"><b class="text-danger">*</b> Selecione o cargo de quem fez a indicação</label>
+            <select class="form-select" id="cargoqi" name="cargoqi">
+                <option value="" disabled selected>[--SELECIONE--]</option>
+                <option>COORDENADOR DE DSEI</option>
+                <option>PRESIDENTE DO CONDISI</option>
+                <option>CHEFES DE DISTRITO</option>
+                <option>OUTROS</option>
+            </select>
+          </div>
+          <div class="mb-3">
+              <label for="fordispb"><b class="text-danger">*</b> Você está disponível para início imediato de suas atividades laborais?</label>
+              <div class="form-check">
+                  <input type="radio" class="form-check-input" id="dispb1" name="dispb" value="S" onclick="checkDtDispFecha();">Sim
+                  <label class="form-check-label" for="fordispb1"></label>
+              </div>
+              <div class="form-check">
+                  <input type="radio" class="form-check-input" id="dispb2" name="dispb" value="N" onclick="checkDtDispAbre();">Não
+                  <label class="form-check-label" for="fordispb2"></label>
+              </div>
+          </div>
+          <div class="mb-3" id="dtdisponivel">
+            <label for="fordtdisp" class="form-label"><b class="text-danger">*</b> Indicar a data de início</label>
+            <input type="date" class="form-control" id="dtdisp" name="dtdisp" min="<?= $dthoje ?>" placeholder="dd-mm-aaaa">
+            <span id="spdt_nasc"></span>
           </div>
           <!-- campo quem indicou - telefone -->
           <div class="row mb-3">
@@ -124,14 +146,13 @@ $dthoje = date('Y-m-d');
                 <label for="telqi" class="form-label"> Nº de telefone/celular de quem fez a indicação para o cargo</label>
               </div>
               <div class="col-md-6 col-12">
-                <label for="dddqi" class="form-label"><b class="text-danger">*</b> Discagem Direta à Distância -
+                <label for="fordddqi" class="form-label"><b class="text-danger">*</b> Discagem Direta à Distância -
                   DDD</label>
                 <input type="text" class="form-control" id="dddqi" name="dddqi" placeholder="(99)">
               </div>
               <div class="col-md-6 col-12">
-                  <label for="telefoneqi" class="form-label"><b class="text-danger">*</b> Telefone</label>
-                  <input type="tel" class="form-control" id="telefoneqi" name="telefoneqi" 
-                    placeholder="9.9999-9999">
+                  <label for="fortelefoneqi" class="form-label"><b class="text-danger">*</b> Telefone</label>
+                  <input type="tel" class="form-control" id="telefoneqi" name="telefoneqi" placeholder="9.9999-9999">
               </div>
           </div>
           <!-- Campo de upload do documento de indicação -->
@@ -142,8 +163,8 @@ $dthoje = date('Y-m-d');
             <input type="file" class="form-control" id="dociq" name="dociq">
           </div>
           <!-- Lista de afastado no momento -->
-          <div class="mb-3">
-            <label for="afastado" class="form-label"><b class="text-danger">*</b> Está afastado no momento? Se o seu
+<!--          <div class="mb-3">
+            <label for="forafastado" class="form-label"><b class="text-danger">*</b> Está afastado no momento? Se o seu
               afastamento for por motivo de saúde, por favor, informe apenas se for superior a 15 dias e se estiver
               vinculado ao INSS.</label>
             <select class="form-select" id="afastado" name="afastado">
@@ -152,14 +173,14 @@ $dthoje = date('Y-m-d');
               <option value="AS">Afastamento por Motivo de Saúde superior a 15 dias (vinculado ao INSS)</option>
               <option value="LM">Licença Maternidade</option>
             </select>
-          </div>
+          </div>-->
           <!-- Data de retorno do afastamento -->
-          <div class="mb-3" id="dt_retorno" style="display: none;">
+<!--          <div class="mb-3" id="dt_retorno" style="display: none;">
             <label for="date_return" class="form-label"><b class="text-danger">*</b> Informe a data de retorno</label>
             <input type="date" class="form-control" id="date_return" name="date_return">
-          </div>
+          </div>-->
           <!-- lista de conveniada -->
-          <div class="mb-3" id="label_opt" style="display: none;">
+<!--          <div class="mb-3" id="label_opt" style="display: none;">
             <label for="examOption" class="form-label">
               <b class="text-danger">*</b> Seu exame admissional foi realizado pela Clínica credenciada ou particular?
             </label>
@@ -168,29 +189,29 @@ $dthoje = date('Y-m-d');
               <option value="credenciada">Credenciada</option>
               <option value="particular">Particular</option>
             </select>
-            <!-- Texto para opção Conveniada -->
+             Texto para opção Conveniada 
             <div id="conveniadaText" class="alert alert-info" style="display: none;">
               Você deverá inserir aqui o Exame Admissional.
             </div>
-            <!-- Texto para opção Particular -->
+             Texto para opção Particular 
             <div id="particularText" class="alert alert-warning" style="display: none;">
               Você deverá inserir aqui o Exame Admissional e o Recibo de Pagamento para o ressarcimento.
             </div>
-            <!-- Campo de upload para Exame Admissional -->
+             Campo de upload para Exame Admissional 
             <div class="mb-3" id="uploadExame" style="display: none;">
               <label for="exameAdmissional" class="form-label">
                 <b class="text-danger">*</b> Upload do Exame Admissional
               </label>
               <input type="file" class="form-control" id="exameAdmissional" name="exameAdmissional">
             </div>
-            <!-- Campo de upload para Recibo de Pagamento -->
+             Campo de upload para Recibo de Pagamento 
             <div class="mb-3" id="comprovantePgto" style="display: none;">
               <label for="reciboPagamento" class="form-label">
                 <b class="text-danger">*</b> Upload do Recibo de Pagamento
               </label>
               <input type="file" class="form-control" id="reciboPagamento" name="reciboPagamento">
             </div>
-          </div>
+          </div>-->
           <!-- campo do cpf -->
           <div class="mb-3">
             <label for="cpf" class="form-label"><b class="text-danger">*</b> CPF </label>
@@ -207,7 +228,7 @@ $dthoje = date('Y-m-d');
           <div class="mb-3">
             <label for="sl_sexo" class="form-label"><b class="text-danger">*</b> Sexo</label>
             <select class="form-select" id="sexo" name="sexo">
-              <option value="" disabled selected>Escolha um sexo</option>
+              <option value="" disabled selected>[--SELECIONE--]</option>
               <option value="M">Masculino</option>
               <option value="F">Feminino</option>
             </select>
@@ -216,7 +237,7 @@ $dthoje = date('Y-m-d');
           <div class="mb-3">
             <label for="etnia" class="form-label"><b class="text-danger">*</b> Etnia/Raça/Cor</label>
             <select class="form-select" id="etnia" name="etnia">
-              <option value="" disabled selected>Escolha sua etnia</option>
+              <option value="" disabled selected>[--SELECIONE--]</option>
               <?php foreach ($result_query6 as $raca) {
                                 echo "<option value=" . $raca['id'] . ">" . $raca['descricao'] . "</option>";
                             }
@@ -227,7 +248,7 @@ $dthoje = date('Y-m-d');
           <div class="mb-3">
             <label for="sl_estado_civil" class="form-label"><b class="text-danger">*</b> Estado civil</label>
             <select class="form-select" id="estado_civil" name="estado_civil">
-              <option value="" disabled selected>Escolha seu estado civil</option>
+              <option value="" disabled selected>[--SELECIONE--]</option>
               <?php
                             foreach ($result_query8 as $est_civ) {
                                 echo "<option value=" . $est_civ['id'] . ">" . $est_civ['descrcao'] . "</option>";
@@ -239,7 +260,7 @@ $dthoje = date('Y-m-d');
           <div class="mb-3">
             <label for="grau_instrucao" class="form-label"><b class="text-danger">*</b> Grau de Instrução</label>
             <select class="form-select" id="grau_instrucao" name="grau_instrucao">
-              <option value="" disabled selected>Selecione o grau de instrução...</option>
+              <option value="" disabled selected>[--SELECIONE--]</option>
               <?php
                             foreach ($result_query9 as $grau) {
                                 echo "<option value=" . $grau['id'] . ">" . $grau['descricao'] . "</option>";
@@ -256,7 +277,7 @@ $dthoje = date('Y-m-d');
           <div class="mb-3">
             <label for="nacionalidade" class="form-label"><b class="text-danger">*</b> Nacionalidade</label>
             <select class="form-select" id="nacionalidade" name="nacionalidade">
-              <option value="" disabled selected>Selecione sua nacionalidade...</option>
+              <option value="" disabled selected>[--SELECIONE--]</option>
               <?php
                             foreach ($result_query7 as $nacional) {
                                 echo "<option value=" . $nacional['id'] . ">" . $nacional['descricao'] . "</option>";
@@ -268,25 +289,25 @@ $dthoje = date('Y-m-d');
           <div class="mb-3" id="blestrangeiro"> 
             <!-- data de chegada ao Brasil -->
             <div class="mb-3">
-              <label for="dtchegada" class="form-label"><b class="text-danger">*</b> Data de Chegada ao Brasil</label>
+              <label for="fordtchegada" class="form-label"><b class="text-danger">*</b> Data de Chegada ao Brasil</label>
               <input type="date" class="form-control" id="dtchegada" name="dtchegada" onchange="validaDtHoje('dtchegada')">
               <span id="spdtchegada"></span>
             </div>
             <!-- RNE - Registro Nacional de Estrangeiro -->
             <div class="mb-3">
-              <label for="rne" class="form-label"><b class="text-danger">*</b> Registro Nacional de Estrangeiro - RNE</label>
+              <label for="forrne" class="form-label"><b class="text-danger">*</b> Registro Nacional de Estrangeiro - RNE</label>
               <input type="text" class="form-control" id="rne" name="rne">
             </div>
             <!-- Orgão Emissor do RNE -->
             <div class="mb-3">
-              <label for="orgemissorrne" class="form-label"><b class="text-danger">*</b> Órgão Emissor (RNE)</label>
+              <label for="fororgemissorrne" class="form-label"><b class="text-danger">*</b> Órgão Emissor (RNE)</label>
               <input type="text" class="form-control" id="orgemissorrne" name="orgemissorrne">
             </div>
             <!-- Tipo de permanência -->
             <div class="mb-3">
-              <label for="tipopermanencia" class="form-label"><b class="text-danger">*</b> Tipo de permanência</label>
+              <label for="fortipopermanencia" class="form-label"><b class="text-danger">*</b> Tipo de permanência</label>
               <select class="form-select" id="tipopermanencia" name="tipopermanencia">
-              <option value="" disabled selected>Escolha uma opção...</option>
+              <option value="" disabled selected>[--SELECIONE--]</option>
               <option value="1">Visto permanente</option>
               <option value="2">Visto temporário</option>
               <option value="3">Asilado</option>
@@ -307,7 +328,7 @@ $dthoje = date('Y-m-d');
             <label for="deficiente" class="form-label"><b class="text-danger">*</b> Deficiente Habilitado ou
               Reabilitado</label>
             <select class="form-select" id="deficiente" name="deficiente">
-              <option value="" disabled selected>Escolha uma opção...</option>
+              <option value="" disabled selected>[--SELECIONE--]</option>
               <option value="S">Sim</option>
               <option value="N">Não</option>
             </select>
@@ -333,7 +354,7 @@ $dthoje = date('Y-m-d');
             <div class="col-md-3 col-12">
               <label for="uf_rg" class="form-label"> Estado de emissão </label>
               <select class="form-select" id="uf_rg" name="uf_rg">
-                <option value="" disabled selected>Selecione o estado...</option>
+                <option value="" disabled selected>[--SELECIONE--]</option>
                 <option value="AC">Acre (AC)</option>
                 <option value="AL">Alagoas (AL)</option>
                 <option value="AP">Amapá (AP)</option>
@@ -375,7 +396,7 @@ $dthoje = date('Y-m-d');
           <div class="mb-3">
             <label for="countryCodeSelect" class="form-label">Código do País:</label>
             <select class="form-select" id="countryCodeSelect" name="country_code" onchange="updateCountryCode()">
-              <option value="" disabled selected>Selecione o código do país...</option>
+              <option value="" disabled selected>[--SELECIONE--]</option>
               <option value="55">Brasil (+55)</option>
               <option value="54">Argentina (+54)</option>
               <option value="591">Bolívia (+591)</option>
@@ -452,7 +473,7 @@ $dthoje = date('Y-m-d');
           <div class="mb-3">
             <label for="uf" class="form-label"><b class="text-danger">*</b> UF</label>
             <select class="form-select" id="ufSelect" name="estado">
-              <option value="" disabled selected>Selecione o estado...</option>
+              <option value="" disabled selected>[--SELECIONE--]</option>
               <option value="AC">Acre (AC)</option>
               <option value="AL">Alagoas (AL)</option>
               <option value="AP">Amapá (AP)</option>
@@ -485,9 +506,9 @@ $dthoje = date('Y-m-d');
           </div>
           <!-- campo de seleção dos países -->
           <div class="mb-3">
-            <label for="paises" class="form-label"><b class="text-danger">*</b> País</label>
+            <label for="forpaises" class="form-label"><b class="text-danger">*</b> País</label>
             <select class="form-select" id="paises" name="paises">
-              <option value="" disabled selected>Selecione o país...</option>
+              <option value="" disabled selected>[--SELECIONE--]</option>
               <?php
                             foreach ($result_query5 as $pais) {
                                 echo "<option value=" . $pais['id'] . ">" . $pais['nome'] . "</option>";
@@ -521,9 +542,9 @@ $dthoje = date('Y-m-d');
           
           <!-- campo select que lista os tipos de conta -->
           <div class="mb-3">
-            <label class="form-check-label" for="contaBB"><b class="text-danger">*</b> Possui conta-corrente ou salário no Banco do Brasil?</label>
+            <label class="form-check-label" for="contaBB"><b class="text-danger">*</b> Possui conta corrente ou conta salário no Banco do Brasil?</label>
             <select class="form-select" id="slConta" name="contaBB">
-              <option value="" disabled selected>Selecione o tipo de conta...</option>
+              <option value="" disabled selected>[--SELECIONE--]</option>
               <option value="1">Conta Corrente</option>
               <option value="3">Conta Salário</option>
               <option value="nao">Não</option>

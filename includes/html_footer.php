@@ -206,10 +206,10 @@ const contaInputs = document.getElementById("contaInputs");
 const casoNao = document.getElementById("casoNao");
 const conveniadaText = document.getElementById('conveniadaText');
 const particularText = document.getElementById('particularText');
-const sl_afastado = document.getElementById('afastado');
+//const sl_afastado = document.getElementById('afastado');
 const label_opt = document.getElementById('label_opt');
-const examOption = document.getElementById('examOption');
-const uploadExame = document.getElementById('uploadExame');
+//const examOption = document.getElementById('examOption');
+//const uploadExame = document.getElementById('uploadExame');
 const comprovantePgto = document.getElementById('comprovantePgto');
 const dt_retorno = document.getElementById('dt_retorno');
 
@@ -221,15 +221,15 @@ obsRadioNao.addEventListener("click", () => {
 });
 
 // evento para exibir a obrigatoriedade
-sl_afastado.addEventListener("change", () => {
-  if (sl_afastado.value === 'N') {
-    label_opt.style.display = "block";
-    dt_retorno.style.display = "none";
-  } else {
-    label_opt.style.display = "none";
-    dt_retorno.style.display = "block";
-  }
-});
+//sl_afastado.addEventListener("change", () => {
+//  if (sl_afastado.value === 'N') {
+//    label_opt.style.display = "block";
+//    dt_retorno.style.display = "none";
+//  } else {
+//    label_opt.style.display = "none";
+//    dt_retorno.style.display = "block";
+//  }
+//});
 
 // Use o evento "change" para capturar mudanças no select da conta bancaria
 sl_conta.addEventListener("change", () => {
@@ -241,37 +241,39 @@ sl_conta.addEventListener("change", () => {
   }
 });
 // Use o evento "change" para capturar mudanças no select
-examOption.addEventListener("change", () => {
-  if (examOption.value === 'credenciada') {
-    conveniadaText.style.display = "block";
-    uploadExame.style.display = "block";
-    particularText.style.display = "none";
-    comprovantePgto.style.display = "none";
-  } else if (examOption.value === 'particular') {
-    particularText.style.display = "block";
-    comprovantePgto.style.display = "block";
-    conveniadaText.style.display = "none";
-    uploadExame.style.display = "block";
-  } else {
-    // Reseta as exibições quando nenhuma opção está selecionada
-    conveniadaText.style.display = "none";
-    particularText.style.display = "none";
-    uploadExame.style.display = "none";
-    comprovantePgto.style.display = "none";
-  }
-});
+//examOption.addEventListener("change", () => {
+//  if (examOption.value === 'credenciada') {
+//    conveniadaText.style.display = "block";
+//    uploadExame.style.display = "block";
+//    particularText.style.display = "none";
+//    comprovantePgto.style.display = "none";
+//  } else if (examOption.value === 'particular') {
+//    particularText.style.display = "block";
+//    comprovantePgto.style.display = "block";
+//    conveniadaText.style.display = "none";
+//    uploadExame.style.display = "block";
+//  } else {
+//    // Reseta as exibições quando nenhuma opção está selecionada
+//    conveniadaText.style.display = "none";
+//    particularText.style.display = "none";
+//    uploadExame.style.display = "none";
+//    comprovantePgto.style.display = "none";
+//  }
+//});
 </script>
 <script>
 $(document).ready(function(){
-    $('#baster').html('<b class="text-danger" >*** </b> Faltou selecionar o DSEI no primeiro campo: Lista dos DSEIs elegíveis');
+//    $('#baster').html('<b class="text-danger" >*** </b> Faltou selecionar o DSEI no primeiro campo: Lista dos DSEIs elegíveis');
     $("#blestrangeiro").hide();
     $("#divqtddep").hide();
+    $("#dtdisponivel").hide();
     // Verifica se a variável de sessão já existe, caso contrário, cria e inicializa com 0
     if (sessionStorage.getItem('contadep') === null) {
         sessionStorage.setItem('contadep', 0);
         $("#contadep").val(0);
     }
 });
+//abre data de disponibilidade para início do trabalho
 //condição para preencher os campos relativos à estrangeiro
 $("#nacionalidade").change(function(){
    let nacionalidade =  $("#nacionalidade").val();
@@ -749,6 +751,15 @@ function subBlocoDependente(){ //add campos em Qualificação Clínica
         
     }
 }
+function checkDtDispAbre(){
+    $("#dtdisponivel").show(400);
+    $("#dtdisp").val('');
+}
+function checkDtDispFecha(){
+    $("#dtdisponivel").hide(200);
+    $("#dtdisp").val('');
+}
+
 function validaCampos(){
     var ok = true;
     //valida o preenchimento dos campos obrigatórios
@@ -783,12 +794,28 @@ function validaCampos(){
         $('#divValida').html(txt);
         return false;
     }
-    let cargoqi = $('#cargoqi').val();
-    if(cargoqi === null || cargoqi === ''){
+    let cargoqi = document.getElementById("cargoqi");
+    if (cargoqi === "") {
         ok = false;
-        txt = '<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; Preencha o campo \"Cargo de quem fez a indicação para o cargo\"</div>';
+        txt = '<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; Selecione \"o cargo de quem fez a indicação\"</div>';
         $('#divValida').html(txt);
         return false;
+    }
+    if(!$('#dispb1').is(':checked') && !$('#dispb2').is(':checked')){
+        ok = false;
+        txt = '<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; Marque o campo \"Você está disponível para início imediato de suas atividades laborais?\"</div>';
+        $('#divValida').html(txt);
+        return false;
+    }else{
+        if($('#dispb2').is(':checked')){
+            let dtdisp = $('#dtdisp').val();
+            if(dtdisp === null || dtdisp === ''){
+                ok = false;
+                txt = '<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; Preencha o campo \"Indicar a data de início\"</div>';
+                $('#divValida').html(txt);
+                return false;
+            }
+        }
     }
     let dddqi = $('#dddqi').val();
     if(dddqi === null || dddqi === ''){
@@ -811,68 +838,68 @@ function validaCampos(){
         $('#divValida').html(txt);
         return false;
     }
-    let afastado = $('#afastado').val();
-    if(afastado === null || afastado === ''){
-        ok = false;
-        txt = '<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; Selecione o campo \"Está afastado no momento? ...\"</div>';
-        $('#divValida').html(txt);
-        return false;
-    }
-    if(afastado === 'N'){
-        let dseis = $('#dseis').val();
-        if(dseis !== '10'){
-            let examOption = $('#examOption').val();
-            if(examOption === null || examOption === ''){
-                ok = false;
-                txt = '<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; Selecione o campo \"Seu exame admissional foi realizado pela Clínica credenciada ou particular?\"</div>';
-                $('#divValida').html(txt);
-                return false;
-            }
-            if(examOption === 'credenciada'){
-                let exameAdmissional = $('#exameAdmissional').val();
-                if(exameAdmissional === null || exameAdmissional === ''){
-                    ok = false;
-                    txt = '<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; Selecione o campo \"Upload do Exame Admissional\"</div>';
-                    $('#divValida').html(txt);
-                    return false;
-                }
-            }
-            if(examOption === 'particular'){
-                let exameAdmissional = $('#exameAdmissional').val();
-                if(exameAdmissional === null || exameAdmissional === ''){
-                    ok = false;
-                    txt = '<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; Selecione o campo \"Upload do Exame Admissional\"</div>';
-                    $('#divValida').html(txt);
-                    return false;
-                }
-                let reciboPagamento = $('#reciboPagamento').val();
-                if(reciboPagamento === null || reciboPagamento === ''){
-                    ok = false;
-                    txt = '<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; Selecione o campo \"Upload do Recibo de Pagamento\"</div>';
-                    $('#divValida').html(txt);
-                    return false;
-                }
-            }
-        }
-    }
-    if(afastado === 'AS'){
-        let date_return = $('#date_return').val();
-        if(date_return === null || date_return === ''){
-            ok = false;
-            txt = '<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; Preencha o campo \"Informe a data de retorno\"</div>';
-            $('#divValida').html(txt);
-            return false;
-        }
-    }
-    if(afastado === 'LM'){
-        let date_return = $('#date_return').val();
-        if(date_return === null || date_return === ''){
-            ok = false;
-            txt = '<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; Preencha o campo \"Informe a data de retorno\"</div>';
-            $('#divValida').html(txt);
-            return false;
-        }
-    }
+//    let afastado = $('#afastado').val();
+//    if(afastado === null || afastado === ''){
+//        ok = false;
+//        txt = '<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; Selecione o campo \"Está afastado no momento? ...\"</div>';
+//        $('#divValida').html(txt);
+//        return false;
+//    }
+//    if(afastado === 'N'){
+//        let dseis = $('#dseis').val();
+//        if(dseis !== '10'){
+//            let examOption = $('#examOption').val();
+//            if(examOption === null || examOption === ''){
+//                ok = false;
+//                txt = '<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; Selecione o campo \"Seu exame admissional foi realizado pela Clínica credenciada ou particular?\"</div>';
+//                $('#divValida').html(txt);
+//                return false;
+//            }
+//            if(examOption === 'credenciada'){
+//                let exameAdmissional = $('#exameAdmissional').val();
+//                if(exameAdmissional === null || exameAdmissional === ''){
+//                    ok = false;
+//                    txt = '<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; Selecione o campo \"Upload do Exame Admissional\"</div>';
+//                    $('#divValida').html(txt);
+//                    return false;
+//                }
+//            }
+//            if(examOption === 'particular'){
+//                let exameAdmissional = $('#exameAdmissional').val();
+//                if(exameAdmissional === null || exameAdmissional === ''){
+//                    ok = false;
+//                    txt = '<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; Selecione o campo \"Upload do Exame Admissional\"</div>';
+//                    $('#divValida').html(txt);
+//                    return false;
+//                }
+//                let reciboPagamento = $('#reciboPagamento').val();
+//                if(reciboPagamento === null || reciboPagamento === ''){
+//                    ok = false;
+//                    txt = '<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; Selecione o campo \"Upload do Recibo de Pagamento\"</div>';
+//                    $('#divValida').html(txt);
+//                    return false;
+//                }
+//            }
+//        }
+//    }
+//    if(afastado === 'AS'){
+//        let date_return = $('#date_return').val();
+//        if(date_return === null || date_return === ''){
+//            ok = false;
+//            txt = '<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; Preencha o campo \"Informe a data de retorno\"</div>';
+//            $('#divValida').html(txt);
+//            return false;
+//        }
+//    }
+//    if(afastado === 'LM'){
+//        let date_return = $('#date_return').val();
+//        if(date_return === null || date_return === ''){
+//            ok = false;
+//            txt = '<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; Preencha o campo \"Informe a data de retorno\"</div>';
+//            $('#divValida').html(txt);
+//            return false;
+//        }
+//    }
     let txtCpf = $('#txtCpf').val();
     if(txtCpf === null || txtCpf === ''){
         ok = false;
@@ -1182,7 +1209,7 @@ function validaCampos(){
             $('#divValida').html(txt);
             $('#msgsuccess').html(txt);
             setTimeout(() => {
-            limpaCampos();
+            //limpaCampos();
             }, 1500);
         } else {
             txt = `<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; ${result.message}</div>`;
@@ -1226,8 +1253,8 @@ function validaCampos(){
         document.getElementById("dseis").selectedIndex = 0;
 //        document.getElementById("organizacao").selectedIndex = 0;
         document.getElementById("profissao").selectedIndex = 0;
-        document.getElementById("afastado").selectedIndex = 0;
-        document.getElementById("examOption").selectedIndex = 0;
+//        document.getElementById("afastado").selectedIndex = 0;
+//        document.getElementById("examOption").selectedIndex = 0;
         document.getElementById("sexo").selectedIndex = 0;
         document.getElementById("etnia").selectedIndex = 0;
         document.getElementById("estado_civil").selectedIndex = 0;
@@ -1240,20 +1267,20 @@ function validaCampos(){
         document.getElementById("paises").selectedIndex = 0;
         document.getElementById("slConta").selectedIndex = 0;
         document.getElementById("tipopermanencia").selectedIndex = 0;
+        document.getElementById("cargoqi").selectedIndex = 0;
         $('#radio3').prop('checked', false);
         $('#radio4').prop('checked', false);
         $('#radio5').prop('checked', false);
         $('#radio6').prop('checked', false);
         $('#rddep1').prop('checked', false);
         $('#rddep2').prop('checked', false);
-        $('#date_return').val('');
-        $('#exameAdmissional').val('');
+//        $('#date_return').val('');
+//        $('#exameAdmissional').val('');
         $('#dociq').val('');
-        $('#reciboPagamento').val('');
+//        $('#reciboPagamento').val('');
         $('#txtCpf').val('');
         $('#nome').val('');
         $('#nomeqi').val('');
-        $('#cargoqi').val('');
         $('#dt_nasc').val('');
         $('#email').val('');
         $('#nr_rg').val('');
