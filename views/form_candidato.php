@@ -175,12 +175,12 @@ $dthoje = date('Y-m-d');
             </select>
           </div>-->
           <!-- Data de retorno do afastamento -->
-<!--          <div class="mb-3" id="dt_retorno" style="display: none;">
+<!--          <div class="mb-3" id="dt_retorno">
             <label for="date_return" class="form-label"><b class="text-danger">*</b> Informe a data de retorno</label>
             <input type="date" class="form-control" id="date_return" name="date_return">
           </div>-->
           <!-- lista de conveniada -->
-<!--          <div class="mb-3" id="label_opt" style="display: none;">
+          <div class="mb-3" id="label_opt">
             <label for="examOption" class="form-label">
               <b class="text-danger">*</b> Seu exame admissional foi realizado pela Clínica credenciada ou particular?
             </label>
@@ -211,7 +211,7 @@ $dthoje = date('Y-m-d');
               </label>
               <input type="file" class="form-control" id="reciboPagamento" name="reciboPagamento">
             </div>
-          </div>-->
+          </div>
           <!-- campo do cpf -->
           <div class="mb-3">
             <label for="cpf" class="form-label"><b class="text-danger">*</b> CPF </label>

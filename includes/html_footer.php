@@ -208,10 +208,10 @@ const conveniadaText = document.getElementById('conveniadaText');
 const particularText = document.getElementById('particularText');
 //const sl_afastado = document.getElementById('afastado');
 const label_opt = document.getElementById('label_opt');
-//const examOption = document.getElementById('examOption');
-//const uploadExame = document.getElementById('uploadExame');
+const examOption = document.getElementById('examOption');
+const uploadExame = document.getElementById('uploadExame');
 const comprovantePgto = document.getElementById('comprovantePgto');
-const dt_retorno = document.getElementById('dt_retorno');
+//const dt_retorno = document.getElementById('dt_retorno');
 
 obsRadioSim.addEventListener("click", () => {
   obs.style.display = "none"; // oculta o pagrágrafo
@@ -241,25 +241,25 @@ sl_conta.addEventListener("change", () => {
   }
 });
 // Use o evento "change" para capturar mudanças no select
-//examOption.addEventListener("change", () => {
-//  if (examOption.value === 'credenciada') {
-//    conveniadaText.style.display = "block";
-//    uploadExame.style.display = "block";
-//    particularText.style.display = "none";
-//    comprovantePgto.style.display = "none";
-//  } else if (examOption.value === 'particular') {
-//    particularText.style.display = "block";
-//    comprovantePgto.style.display = "block";
-//    conveniadaText.style.display = "none";
-//    uploadExame.style.display = "block";
-//  } else {
-//    // Reseta as exibições quando nenhuma opção está selecionada
-//    conveniadaText.style.display = "none";
-//    particularText.style.display = "none";
-//    uploadExame.style.display = "none";
-//    comprovantePgto.style.display = "none";
-//  }
-//});
+examOption.addEventListener("change", () => {
+  if (examOption.value === 'credenciada') {
+    conveniadaText.style.display = "block";
+    uploadExame.style.display = "block";
+    particularText.style.display = "none";
+    comprovantePgto.style.display = "none";
+  } else if (examOption.value === 'particular') {
+    particularText.style.display = "block";
+    comprovantePgto.style.display = "block";
+    conveniadaText.style.display = "none";
+    uploadExame.style.display = "block";
+  } else {
+    // Reseta as exibições quando nenhuma opção está selecionada
+    conveniadaText.style.display = "none";
+    particularText.style.display = "none";
+    uploadExame.style.display = "none";
+    comprovantePgto.style.display = "none";
+  }
+});
 </script>
 <script>
 $(document).ready(function(){
@@ -900,6 +900,40 @@ function validaCampos(){
 //            return false;
 //        }
 //    }
+    //nova remodelagem na regra de afastamento
+    let examOption = $('#examOption').val();
+    if(examOption === null || examOption === ''){
+        ok = false;
+        txt = '<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; Selecione o campo \"Seu exame admissional foi realizado pela Clínica credenciada ou particular?\"</div>';
+        $('#divValida').html(txt);
+        return false;
+    }
+    if(examOption === 'credenciada'){
+        let exameAdmissional = $('#exameAdmissional').val();
+        if(exameAdmissional === null || exameAdmissional === ''){
+            ok = false;
+            txt = '<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; Selecione o campo \"Upload do Exame Admissional\"</div>';
+            $('#divValida').html(txt);
+            return false;
+        }
+    }
+    if(examOption === 'particular'){
+        let exameAdmissional = $('#exameAdmissional').val();
+        if(exameAdmissional === null || exameAdmissional === ''){
+            ok = false;
+            txt = '<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; Selecione o campo \"Upload do Exame Admissional\"</div>';
+            $('#divValida').html(txt);
+            return false;
+        }
+        let reciboPagamento = $('#reciboPagamento').val();
+        if(reciboPagamento === null || reciboPagamento === ''){
+            ok = false;
+            txt = '<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; Selecione o campo \"Upload do Recibo de Pagamento\"</div>';
+            $('#divValida').html(txt);
+            return false;
+        }
+    }
+    // fim da regra de afastamento que foi remodelada    
     let txtCpf = $('#txtCpf').val();
     if(txtCpf === null || txtCpf === ''){
         ok = false;
@@ -1196,8 +1230,9 @@ function validaCampos(){
     //envio do formulário preenchido
     var formul = document.getElementById('formCadastro');
     var dados = new FormData(formul);
+    console.log(dados);
     try {
-        var response = await fetch('http://localhost:83/precadastro_v2/views/controller/processo_cadastro.php', {
+        var response = await fetch('http://localhost/precadastro_v2/views/controller/processo_cadastro.php', {
             method: 'POST',
             body: dados
         });
@@ -1209,7 +1244,7 @@ function validaCampos(){
             $('#divValida').html(txt);
             $('#msgsuccess').html(txt);
             setTimeout(() => {
-            //limpaCampos();
+            limpaCampos();
             }, 1500);
         } else {
             txt = `<div class="alert alert-danger"><strong><i class="fas fa-chevron-circle-right"></i> </strong>&nbsp; ${result.message}</div>`;
@@ -1244,7 +1279,7 @@ function validaCampos(){
                 // Oculta o #progress-container após 1 segundo
                 setTimeout(() => {
                     $("#progress-container").css("display", "none") // ou use .css("display", "none")
-                }, 500); // Espera 1 segundo antes de ocultar
+                }, 1000); // Espera 1 segundo antes de ocultar
             }
         }, 500); // Simula a cada 500ms
     }
@@ -1253,8 +1288,8 @@ function validaCampos(){
         document.getElementById("dseis").selectedIndex = 0;
 //        document.getElementById("organizacao").selectedIndex = 0;
         document.getElementById("profissao").selectedIndex = 0;
-//        document.getElementById("afastado").selectedIndex = 0;
-//        document.getElementById("examOption").selectedIndex = 0;
+        document.getElementById("afastado").selectedIndex = 0;
+        document.getElementById("examOption").selectedIndex = 0;
         document.getElementById("sexo").selectedIndex = 0;
         document.getElementById("etnia").selectedIndex = 0;
         document.getElementById("estado_civil").selectedIndex = 0;
@@ -1275,9 +1310,9 @@ function validaCampos(){
         $('#rddep1').prop('checked', false);
         $('#rddep2').prop('checked', false);
 //        $('#date_return').val('');
-//        $('#exameAdmissional').val('');
+        $('#exameAdmissional').val('');
         $('#dociq').val('');
-//        $('#reciboPagamento').val('');
+        $('#reciboPagamento').val('');
         $('#txtCpf').val('');
         $('#nome').val('');
         $('#nomeqi').val('');

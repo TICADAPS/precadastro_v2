@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="1">
+        <file>
+            <url>views/form_candidato.php</url>
+            <bookmark id="1">
+                <name/>
+                <line>179</line>
+                <key/>
+            </bookmark>
+        </file>
+    </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/C:/xampp/htdocs/precadastro_v2/views/form_candidato.php</file>
+            <file>file:/C:/xampp/htdocs/precadastro_v2/views/controller/processo_cadastro.php</file>
+            <file>file:/C:/xampp/htdocs/precadastro_v2/includes/html_footer.php</file>
+        </group>
     </open-files>
 </project-private>
